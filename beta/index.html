@@ -114,6 +114,7 @@
     .teams { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px; }
     .teams.playing-teams { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
     .teams.waiting-teams { margin-top: 14px; }
+    .team.waiting-list { grid-column: 1 / -1; }
     .team {
       background: #020617;
       border-radius: 16px;
@@ -182,9 +183,38 @@
     }
 
     @media (max-width: 720px) {
-      .teams.playing-teams { grid-template-columns: 1fr; }
-      .score-row { grid-template-columns: 1fr; }
-      input[type="number"] { max-width: 100%; }
+      .teams,
+      .teams.playing-teams {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .teams.waiting-teams { grid-template-columns: 1fr; }
+      .team { border-radius: 12px; padding: 10px; }
+      .team h3 { font-size: 15px; margin-bottom: 6px; }
+      .team ul { padding-left: 16px; }
+      .team li { font-size: 13px; }
+      .team-status {
+        display: flex;
+        width: fit-content;
+        margin: 6px 0 0;
+        font-size: 11px;
+      }
+      .score-box { padding: 10px; }
+      .score-row {
+        grid-template-columns: minmax(0, 1fr) 48px 48px minmax(0, 1fr) auto;
+        gap: 5px;
+        font-size: 12px;
+      }
+      .score-row input[type="number"] {
+        max-width: 48px;
+        min-width: 0;
+        padding: 8px 4px;
+        font-size: 15px;
+      }
+      .score-row .small-button {
+        padding: 8px 9px;
+        font-size: 12px;
+      }
     }
 
     @media (max-width: 720px), (orientation: portrait) and (max-width: 1100px) {
@@ -762,7 +792,7 @@
             return `<div class="teams waiting-teams"><div class="team waiting-now"><h3>${teamNames[index]}<span class="team-status">Venter</span></h3><ul>${team.map(name => `<li>${escapeHtml(name)}</li>`).join("")}</ul></div></div>`;
           }).join("")
         : "";
-      const waitingHtml = round.waiting.length ? `<div class="team"><h3>Venter</h3><ul>${round.waiting.map(name => `<li>${escapeHtml(name)}</li>`).join("")}</ul></div>` : "";
+      const waitingHtml = round.waiting.length ? `<div class="team waiting-now waiting-list"><h3>Venter</h3><ul>${round.waiting.map(name => `<li>${escapeHtml(name)}</li>`).join("")}</ul></div>` : "";
       const teamGridClass = nextMatch && round.teams.length === 3 ? "teams playing-teams" : "teams";
       return `<p><strong>Runde ${round.roundNumber}</strong> <span class="small">Variasjonsscore: ${round.score}</span></p><div class="${teamGridClass}">${playingTeamsHtml}${waitingHtml}</div>${waitingTeamHtml}`;
     }
