@@ -376,19 +376,23 @@
       if (existingName && isSelectedPlayer(existingName)) {
         message.innerHTML = `<p class="error">${escapeHtml(name)} er allerede huket av.</p>`; return;
       }
-      if (getActivePlayerCount() >= 9) { message.innerHTML = `<p class="error">Maks 9 aktive spillere i denne versjonen.</p>`; return; }
       const savedName = existingName || name;
       if (!existingName) state.allPlayerNames = uniqueNames([...state.allPlayerNames, name]);
-      if (!state.playerNames.some(existing => existing.toLowerCase() === savedName.toLowerCase())) state.playerNames.push(savedName);
-      const existingPlayer = state.players.find(player => player.name.toLowerCase() === savedName.toLowerCase());
-      if (existingPlayer) {
-        existingPlayer.active = true;
-        existingPlayer.lastPlayed = false;
-      } else if (state.players.length) {
-        state.players.push(createPlayer(savedName));
+      const shouldSelect = getActivePlayerCount() < 9;
+      if (shouldSelect) {
+        if (!state.playerNames.some(existing => existing.toLowerCase() === savedName.toLowerCase())) state.playerNames.push(savedName);
+        const existingPlayer = state.players.find(player => player.name.toLowerCase() === savedName.toLowerCase());
+        if (existingPlayer) {
+          existingPlayer.active = true;
+          existingPlayer.lastPlayed = false;
+        } else if (state.players.length) {
+          state.players.push(createPlayer(savedName));
+        }
       }
       input.value = "";
-      message.innerHTML = state.players.length ? `<p class="success">${escapeHtml(savedName)} er lagt til videre i økten.</p>` : "";
+      message.innerHTML = shouldSelect
+        ? `<p class="success">${escapeHtml(savedName)} er lagt til og huket av.</p>`
+        : `<p class="success">${escapeHtml(savedName)} er lagt i spillerbanken, men ikke huket av fordi 9 spillere allerede er med.</p>`;
       saveState(); render(); input.focus();
     }
 
